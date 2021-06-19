@@ -17,10 +17,8 @@ export class Builder {
   async build(): Promise<null> {
     const { globals } = this.config;
     const pages = await this.readPages();
-    const tree : Tree = {
-      globals,
-      pages,
-    }
+    const tree = await this.modifyTree( new Tree(globals, pages) );
+    console.log(tree);
     return this.export(tree);
   }
 
@@ -31,6 +29,16 @@ export class Builder {
       .filter( Guards.isLoader )
       .map( plugin => runLoadPlugin(plugin, files) );
     return ( await Promise.all( loaders )).reduce(flatten, []);
+  }
+
+  private async modifyTree(tree: Tree) : Promise<Tree> {
+    const { plugins } = this.config;
+    const modPlugins = plugins.filter( Guards.isModifier );
+    let outTree = tree;
+    for (const plugin of modPlugins) {
+      outTree = await plugin.modify(outTree);
+    }
+    return outTree;
   }
 
   private async export(tree: Tree) : Promise<null> {

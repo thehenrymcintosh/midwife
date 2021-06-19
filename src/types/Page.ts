@@ -23,7 +23,35 @@ export class Page {
 
 export type Globals = PlainObject;
 
-export type Tree = {
-  globals: Globals,
-  pages: Page[],
+type visit = (arg0: any) => any
+
+export class Tree {
+  readonly globals: Globals;
+  readonly pages: Page[];
+
+  constructor(globals: Globals, pages: Page[]) {
+    this.globals = globals;
+    this.pages = pages;
+  }
+
+  visitGlobals(cb: visit): Globals {
+    return recursiveVisit(this.globals, cb);
+  }
+
+  visitPages(cb: visit): Page[]{
+    return recursiveVisit(this.pages, cb);
+  }
+}
+
+
+function recursiveVisit(o: any, cb: visit): any {
+  if (Array.isArray(o)) {
+    return o.map( val => recursiveVisit(val, cb));
+  } else if (typeof o === "object") {
+    const newObject: PlainObject = {};
+    Object.entries(o).forEach(([key, val]) => newObject[key] = recursiveVisit(val, cb));
+    return newObject;
+  } else if (typeof o !== "undefined" && typeof o !== "function" ) {
+    return cb(o);
+  }
 }

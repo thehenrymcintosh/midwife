@@ -1,5 +1,6 @@
 import TomlLoader from "src/plugins/toml"
 import LiquidRenderer from "src/plugins/liquid"
+import Shortcodes from "src/plugins/shortcodes"
 
 export default {
   mode: "development",
@@ -9,6 +10,7 @@ export default {
   plugins: [
     new TomlLoader(),
     new LiquidRenderer(),
+    new Shortcodes("Henry's Agency"),
   ],
   globals: {
     nav: [
