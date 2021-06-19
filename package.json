@@ -5,7 +5,7 @@
   "scripts": {
     "build": "./node_modules/.bin/ts-node build.ts",
     "lint": "eslint . --ext .ts",
-    "start": "node -r module-alias/register ./dist --env=production",
+    "start": "./node_modules/.bin/ts-node -r tsconfig-paths/register ./src --env=production",
     "start:dev": "nodemon",
     "test": "nodemon --config ./spec/nodemon.json"
   },
@@ -60,6 +60,7 @@
   ],
   "dependencies": {
     "glob": "^7.1.7",
+    "liquidjs": "^9.25.0",
     "toml": "^3.0.0"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 import { Config, InputConfig } from "./types/Config";
-import { Page } from "./types/Page";
+import { Page, Tree } from "./types/Page";
 import { Guards, LoaderPlugin } from "./types/Plugin";
 import glob from "glob";
 import path from "path";
@@ -11,18 +11,35 @@ export class Builder {
     this.config = new Config(config);
     this.runLoadPlugin = this.runLoadPlugin.bind(this);
     this.getDataFiles = this.getDataFiles.bind(this);
+    this.export = this.export.bind(this);
   }
 
-  async build() {
+  async build(): Promise<null> {
+    const { globals } = this.config;
+    const pages = await this.readPages();
+    const tree : Tree = {
+      globals,
+      pages,
+    }
+    return this.export(tree);
+  }
+
+  private async readPages() : Promise<Page[]> {
     const {config, runLoadPlugin} = this;
     const files = await this.getDataFiles()
-    // eslint-disable-next-line no-console
     const loaders = config.plugins
       .filter( Guards.isLoader )
       .map( plugin => runLoadPlugin(plugin, files) );
-    const pages = ( await Promise.all( loaders )).reduce(flatten, []);
-    // eslint-disable-next-line no-console
-    console.log(JSON.stringify(pages, null, 2));
+    return ( await Promise.all( loaders )).reduce(flatten, []);
+  }
+
+  private async export(tree: Tree) : Promise<null> {
+    const { plugins, viewsDir, outDir } = this.config;
+    return Promise.all( 
+      plugins
+        .filter( Guards.isRender )
+        .map( plugin => plugin.render(tree, viewsDir, outDir) )
+    ).then( () => null );
   }
 
   private runLoadPlugin(plugin: LoaderPlugin, filePaths: string[]): Promise<Page[]> {

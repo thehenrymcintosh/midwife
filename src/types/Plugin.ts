@@ -10,7 +10,7 @@ export interface ModifierPlugin {
 }
 
 export interface RenderPlugin {
-  render( outdir: string, tree: Tree ) : void,
+  render( tree: Tree, viewsDir: string, outDir: string, ) : Promise<null>,
 }
 
 export interface Plugin extends LoaderPlugin, ModifierPlugin, RenderPlugin {}

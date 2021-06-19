@@ -1,20 +1,16 @@
+type PlainObject = {
+  [k:string]: any 
+};
+
 interface InputPage { 
-  meta?: {
-    [k:string]: any 
-  },
-  body?: {
-    [k:string]: any 
-  },
+  meta?: PlainObject,
+  body?: PlainObject,
 }
 
 export interface Page { 
   filePath: string,
-  meta: {
-    [k:string]: any,
-  },
-  body: {
-    [k:string]: any,
-  },
+  meta: PlainObject,
+  body: PlainObject,
 }
 
 export class Page {
@@ -25,9 +21,7 @@ export class Page {
   }
 }
 
-export type Globals = { 
-  [k:string]: any 
-}
+export type Globals = PlainObject;
 
 export type Tree = {
   globals: Globals,

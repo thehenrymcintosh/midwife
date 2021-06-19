@@ -1,5 +1,6 @@
 import { AllPluginTypes }from "./Plugin";
 import { Globals }from "./Page";
+import path from "path";
 
 const NODE_ENV = process.env['NODE_ENV'];
 
@@ -23,11 +24,12 @@ export interface Config {
 
 export class Config {
   constructor(config: InputConfig) {
+    const cwd = process.cwd();
     this.globals = config.globals || {};
     this.mode = toEnv(config.mode) || toEnv(NODE_ENV) || "development";
-    this.dataDir = config.dataDir || "./data";
-    this.viewsDir = config.dataDir || "./views";
-    this.outDir = config.outDir || "./dist";
+    this.dataDir = path.resolve(cwd, config.dataDir || "./data");
+    this.viewsDir = path.resolve(cwd, config.viewsDir || "./views");
+    this.outDir = path.resolve(cwd, config.outDir || "./dist");
     this.plugins = config.plugins || [];
   }
 }

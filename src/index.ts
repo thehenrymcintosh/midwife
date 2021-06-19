@@ -1,10 +1,11 @@
 import { Builder } from "./Builder";
 import denimConfig from "denim.config.js";
 
-export function build( ) {
+export async function build( ) {
   const config = denimConfig;
   const builder = new Builder(config);
-  builder.build();
+  await builder.build();
+  console.log("Done");
 }
 
 build();

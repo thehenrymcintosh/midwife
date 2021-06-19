@@ -1,6 +1,6 @@
 [meta]
-title="Home"
-description="My home page!"
+title="Landing"
+description="My landing page!"
 
 [body]
-h1="TITLE"
+h1="Landing"
