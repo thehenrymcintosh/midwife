@@ -1,5 +1,5 @@
 import { AllPluginTypes }from "./Plugin";
-import { Globals }from "./Page";
+import { Globals }from "./Tree";
 import path from "path";
 
 const NODE_ENV = process.env['NODE_ENV'];

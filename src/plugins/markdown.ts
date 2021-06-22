@@ -1,21 +1,25 @@
-import toml from "toml";
 import { LoaderPlugin } from "../types/Plugin";
 import { RawLoadable } from "../types/Loadable";
 import fs from "fs";
+import marked from "marked";
 
-export default class TomlPlugin implements LoaderPlugin {
+export default class MarkdownPlugin implements LoaderPlugin {
   accepts(filename: string): boolean {
-    return filename.endsWith(".toml");
+    return filename.endsWith(".md");
   }
   load(filename: string): Promise<RawLoadable> {
     return open(filename)
       .then((text) => {
-        if (filename.endsWith(".record.toml")) {
-          return toml.parse(text) as RawLoadable
-        }
         return {
-          data: toml.parse(text),
-        }
+          meta: {
+            type: "record",
+            alias: filename.replace(".md", ""),
+          },
+          data: {
+            markdown: text,
+            html: marked(text)
+          }
+        };
       })
   }
 }

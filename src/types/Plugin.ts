@@ -1,8 +1,9 @@
-import { Page, Tree } from "./Page";
+import { Tree } from "./Tree";
+import { RawLoadable } from "./Loadable";
 
 export interface LoaderPlugin {
   accepts(filename: string): boolean,
-  load( file: string ) : Promise<Page>,
+  load( file: string ) : Promise<RawLoadable>,
 }
 
 export interface ModifierPlugin {
@@ -17,7 +18,7 @@ export interface Plugin extends LoaderPlugin, ModifierPlugin, RenderPlugin {}
 
 export type AllPluginTypes = Plugin | LoaderPlugin | ModifierPlugin | RenderPlugin;
 
-export const Guards = {
+export const PluginGuards = {
   isLoader: (plugin: AllPluginTypes) : plugin is LoaderPlugin => {
     return typeof (plugin as LoaderPlugin).accepts === "function" && typeof (plugin as LoaderPlugin).load === "function"
   },

@@ -1,23 +1,31 @@
 import { ModifierPlugin } from "../types/Plugin";
-import { Tree } from "../types/Page";
+import { Tree } from "../types/Tree";
 
 
-
+type shortcode = {
+  text: string,
+  callback: () => string,
+}
 export default class ShortcodePlugin implements ModifierPlugin {
-  agency: string;
+  codes: shortcode[]
 
-  constructor(agency: string) {
-    this.replaceShortcode = this.replaceShortcode.bind(this);
-    this.agency = agency;
+  constructor(codes: shortcode[]) {
+    this.codes = codes;
   }
   modify(tree: Tree) : Promise<Tree> {
-    const newTree = new Tree(tree.globals, tree.visitPages( this.replaceShortcode ))
+    const pages = tree.visitPages( ( val ) => this.replaceShortcode(val) );
+    const newTree = new Tree(tree.globals, pages, tree.records);
     return Promise.resolve(newTree);
   }
 
   private replaceShortcode(value: any) {
     if (typeof value !== "string") return value;
-    return value.replace(/\[AGENCY_NAME\]/, this.agency);
+    let temp = value;
+    this.codes.forEach(code => {
+      const rx = new RegExp(`\\[${code.text}\\]`);
+      temp = temp.replace(rx, code.callback() );
+    })
+    return temp;
   }
 }
 

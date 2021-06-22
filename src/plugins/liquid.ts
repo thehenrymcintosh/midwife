@@ -1,5 +1,5 @@
 import { RenderPlugin } from "../types/Plugin";
-import { Tree } from "../types/Page";
+import { Tree } from "../types/Tree";
 import { Liquid } from "liquidjs";
 import fs from "fs";
 import path from "path";
@@ -8,10 +8,11 @@ export default class LiquidPlugin implements RenderPlugin {
   render(tree: Tree, viewsDir: string, outDir: string): Promise<null> {
     const engine = new Liquid({ root: viewsDir, extname: ".liquid" });
     const { pages, globals } = tree;
+
     return Promise.all(
       pages.map(page => {
-        const outPath = changeExtension(path.join(outDir, page.filePath), ".html");
-        engine.renderFile("app", {globals, page})
+        const outPath = changeExtension(path.join(outDir, page.path()), ".html");
+        engine.renderFile("app", {globals, page: page.unwrap() })
           .then(output => write(outPath, output) )
       })
     )

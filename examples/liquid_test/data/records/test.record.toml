@@ -1,0 +1,10 @@
+[meta]
+type="record"
+alias=[
+  "rhinocerous",
+  "test",
+]
+
+[data]
+title="TEST RECORD"
+description="This is an example page"

@@ -1,8 +1,11 @@
 import { Config, InputConfig } from "./types/Config";
-import { Page, Tree } from "./types/Page";
-import { Guards, LoaderPlugin } from "./types/Plugin";
+import { Page } from "./types/Page";
+import { PluginGuards, LoaderPlugin } from "./types/Plugin";
 import glob from "glob";
 import path from "path";
+import { Loadable, LoadGuards } from "./types/Loadable";
+import { Record } from "./types/Record";
+import { Tree } from "./types/Tree";
 
 export class Builder {
   private readonly config : Config;
@@ -10,30 +13,33 @@ export class Builder {
   constructor( config : InputConfig ) {
     this.config = new Config(config);
     this.runLoadPlugin = this.runLoadPlugin.bind(this);
-    this.getDataFiles = this.getDataFiles.bind(this);
-    this.export = this.export.bind(this);
+    this.runLoadPlugins = this.runLoadPlugins.bind(this);
+    this.runModifyPlugins = this.runModifyPlugins.bind(this);
+    this.runExportPlugins = this.runExportPlugins.bind(this);
   }
 
   async build(): Promise<null> {
     const { globals } = this.config;
-    const pages = await this.readPages();
-    const tree = await this.modifyTree( new Tree(globals, pages) );
-    console.log(tree);
-    return this.export(tree);
+    const loadables = await this.runLoadPlugins();
+    const pages = loadables.filter(LoadGuards.isPage);
+    const records = loadables.filter(LoadGuards.isRecord);
+    const tree = await this.runModifyPlugins( new Tree(globals, pages, records) );
+
+    return this.runExportPlugins(tree.populate());
   }
 
-  private async readPages() : Promise<Page[]> {
+  private async runLoadPlugins() : Promise<Loadable[]> {
     const {config, runLoadPlugin} = this;
     const files = await this.getDataFiles()
     const loaders = config.plugins
-      .filter( Guards.isLoader )
+      .filter( PluginGuards.isLoader )
       .map( plugin => runLoadPlugin(plugin, files) );
     return ( await Promise.all( loaders )).reduce(flatten, []);
   }
 
-  private async modifyTree(tree: Tree) : Promise<Tree> {
+  private async runModifyPlugins(tree: Tree) : Promise<Tree> {
     const { plugins } = this.config;
-    const modPlugins = plugins.filter( Guards.isModifier );
+    const modPlugins = plugins.filter( PluginGuards.isModifier );
     let outTree = tree;
     for (const plugin of modPlugins) {
       outTree = await plugin.modify(outTree);
@@ -41,16 +47,16 @@ export class Builder {
     return outTree;
   }
 
-  private async export(tree: Tree) : Promise<null> {
+  private async runExportPlugins(tree: Tree) : Promise<null> {
     const { plugins, viewsDir, outDir } = this.config;
     return Promise.all( 
       plugins
-        .filter( Guards.isRender )
+        .filter( PluginGuards.isRender )
         .map( plugin => plugin.render(tree, viewsDir, outDir) )
     ).then( () => null );
   }
 
-  private runLoadPlugin(plugin: LoaderPlugin, filePaths: string[]): Promise<Page[]> {
+  private runLoadPlugin(plugin: LoaderPlugin, filePaths: string[]): Promise<Loadable[]> {
     const {dataDir} = this.config;
     return Promise.all(
       filePaths
@@ -58,7 +64,13 @@ export class Builder {
         .map(filePath => 
           plugin
             .load(filePath)
-            .then(page => new Page(page, path.relative(dataDir, filePath)))
+            .then(loadable => {
+              const relpath = path.relative(dataDir, filePath);
+              if (loadable.meta && loadable.meta.type && loadable.meta.type === "record") {
+                return new Record(relpath, loadable);
+              }
+              return new Page(relpath, loadable)
+            })
         )
     );
   }
