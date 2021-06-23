@@ -1,3 +1,5 @@
+type ArrayOfOneOrMore<T> = { 0: T } & T[];
+
 export interface EntityMeta {
   outpath?: string,
   aliases: string[],
@@ -49,6 +51,10 @@ export class Entity<T extends AcceptibleEntities> {
     } else if (typeof aliases === "string") {
       this._meta.aliases.push(aliases);
     }
+  }
+
+  id(): string {
+    return (this.aliases() as ArrayOfOneOrMore<string>)[0];
   }
 
   unwrap(): T {

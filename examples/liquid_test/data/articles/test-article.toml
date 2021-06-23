@@ -1,4 +1,4 @@
-_meta = { outpath="__SELF", template="article" }
+_meta = { outpath="__SELF", template="article", category="all-articles" }
 
 
 title="TEST RECORD"

@@ -17,5 +17,10 @@
   <p>{{ description }}</p>
 
   {{ content }}
+
+  Other articles: 
+  {% for article in similar_articles %}
+    > {{ article.title }}
+  {% endfor %}
 </body>
 </html>

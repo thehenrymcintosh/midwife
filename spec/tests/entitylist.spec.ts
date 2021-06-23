@@ -7,6 +7,7 @@ function getValidEntities(): Entity<any>[] {
     new Entity("branches/westminster.toml", { name: "Westminster", staff: ["staff/james.toml"] }),
     new Entity("articles/new-story.toml", {title: "New Story!", author: "staff/james.toml", branch: "branches/westminster.toml", content: "__SELF.md" }),
     new Entity("articles/new-story.md", "#Some markdown!"),
+    new Entity("articles/new-story-2.toml", ["staff/james.toml", "staff/james.toml"]),
   ]
 }
 
@@ -19,6 +20,8 @@ function checkProxyWorks(entity: any) {
     expect(entity.author.name).toEqual("James");
   } else if (entity.staff) {
     expect(entity.staff[0].name).toEqual("James");
+  } else if (Array.isArray(entity)) {
+    expect(entity[0].name).toEqual("James");
   }
 }
 
