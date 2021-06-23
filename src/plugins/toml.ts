@@ -1,6 +1,6 @@
 import toml from "toml";
-import { LoaderPlugin } from "../types/Plugin";
-import { RawLoadable } from "../types/Loadable";
+import { LoaderPlugin } from "../entities/Plugin";
+import { RawLoadable } from "../entities/Loadable";
 import fs from "fs";
 
 export default class TomlPlugin implements LoaderPlugin {

@@ -1,11 +1,8 @@
-import { Config, InputConfig } from "./types/Config";
-import { Page } from "./types/Page";
-import { PluginGuards, LoaderPlugin } from "./types/Plugin";
+import { Config, InputConfig } from "./entities/Config";
+import { PluginGuards, LoaderPlugin } from "./entities/Plugin";
 import glob from "glob";
 import path from "path";
-import { Loadable, LoadGuards } from "./types/Loadable";
-import { Record } from "./types/Record";
-import { Tree } from "./types/Tree";
+import { Entity, Entities } from "./entities/Entity";
 
 export class Builder {
   private readonly config : Config;
@@ -19,16 +16,12 @@ export class Builder {
   }
 
   async build(): Promise<null> {
-    const { globals } = this.config;
-    const loadables = await this.runLoadPlugins();
-    const pages = loadables.filter(LoadGuards.isPage);
-    const records = loadables.filter(LoadGuards.isRecord);
-    const tree = await this.runModifyPlugins( new Tree(globals, pages, records) );
-
-    return this.runExportPlugins(tree.populate());
+    const initialEntities = await this.runLoadPlugins();
+    const entities = await this.runModifyPlugins( initialEntities );
+    return this.runExportPlugins(entities);
   }
 
-  private async runLoadPlugins() : Promise<Loadable[]> {
+  private async runLoadPlugins() : Promise<Entities> {
     const {config, runLoadPlugin} = this;
     const files = await this.getDataFiles()
     const loaders = config.plugins
@@ -37,26 +30,26 @@ export class Builder {
     return ( await Promise.all( loaders )).reduce(flatten, []);
   }
 
-  private async runModifyPlugins(tree: Tree) : Promise<Tree> {
+  private async runModifyPlugins(prevEntities: Entities) : Promise<Entities> {
     const { plugins } = this.config;
     const modPlugins = plugins.filter( PluginGuards.isModifier );
-    let outTree = tree;
+    let entities = prevEntities;
     for (const plugin of modPlugins) {
-      outTree = await plugin.modify(outTree);
+      entities = await plugin.modify(entities);
     }
-    return outTree;
+    return entities;
   }
 
-  private async runExportPlugins(tree: Tree) : Promise<null> {
+  private async runExportPlugins(entities: Entities) : Promise<null> {
     const { plugins, viewsDir, outDir } = this.config;
     return Promise.all( 
       plugins
         .filter( PluginGuards.isRender )
-        .map( plugin => plugin.render(tree, viewsDir, outDir) )
+        .map( plugin => plugin.render(entities, viewsDir, outDir) )
     ).then( () => null );
   }
 
-  private runLoadPlugin(plugin: LoaderPlugin, filePaths: string[]): Promise<Loadable[]> {
+  private runLoadPlugin(plugin: LoaderPlugin, filePaths: string[]): Promise<Entities> {
     const {dataDir} = this.config;
     return Promise.all(
       filePaths
@@ -64,12 +57,9 @@ export class Builder {
         .map(filePath => 
           plugin
             .load(filePath)
-            .then(loadable => {
+            .then(pluginResponse => {
               const relpath = path.relative(dataDir, filePath);
-              if (loadable.meta && loadable.meta.type && loadable.meta.type === "record") {
-                return new Record(relpath, loadable);
-              }
-              return new Page(relpath, loadable)
+              return new Entity(relpath, pluginResponse);
             })
         )
     );

@@ -1,5 +1,5 @@
-import { ModifierPlugin } from "../types/Plugin";
-import { Tree } from "../types/Tree";
+import { ModifierPlugin } from "../entities/Plugin";
+import { Tree } from "../entities/Tree";
 
 
 type shortcode = {

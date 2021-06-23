@@ -1,5 +1,5 @@
-import { RenderPlugin } from "../types/Plugin";
-import { Tree } from "../types/Tree";
+import { RenderPlugin } from "../entities/Plugin";
+import { Tree } from "../entities/Tree";
 import { Liquid } from "liquidjs";
 import fs from "fs";
 import path from "path";
