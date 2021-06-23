@@ -1,0 +1,6 @@
+_meta = { alias="westminster" }
+
+name="Westminster"
+staff=[
+  "staff/henry-mcintosh"
+]

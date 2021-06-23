@@ -1,4 +1,5 @@
 import { Entities } from "./Entity";
+import { EntityList } from "./EntityList";
 
 export interface LoaderPlugin {
   accepts(filename: string): boolean,
@@ -10,7 +11,7 @@ export interface ModifierPlugin {
 }
 
 export interface RenderPlugin {
-  render( entities: Entities, viewsDir: string, outDir: string, ) : Promise<null>,
+  render( entities: EntityList, viewsDir: string, outDir: string, ) : Promise<null>,
 }
 
 export interface Plugin extends LoaderPlugin, ModifierPlugin, RenderPlugin {}

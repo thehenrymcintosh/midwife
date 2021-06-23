@@ -1,7 +1,8 @@
-interface RecordMeta {
+export interface EntityMeta {
   outpath?: string,
   aliases: string[],
   _self: string,
+  [k:string]: any 
 }
 
 interface ObjectWithMeta {
@@ -17,7 +18,7 @@ type AcceptibleEntities = string | Record<any, any> | number | string[] | number
 export type Entities = Entity<any>[];
 
 export class Entity<T extends AcceptibleEntities> { 
-  private _meta: RecordMeta;
+  private _meta: EntityMeta;
   private _data: T;
 
   constructor(id: string, rawloaded: T) {
@@ -30,7 +31,8 @@ export class Entity<T extends AcceptibleEntities> {
 
     const _meta = (rawloaded as ObjectWithMeta)._meta;
     if ( typeof _meta !== "undefined" ) {
-      const { aliases, outpath } = _meta;
+      const { aliases, outpath, ...rest } = _meta;
+      Object.assign(this._meta, rest);
       if ( typeof outpath === "string" ) this._meta.outpath = outpath;
       if ( Array.isArray(aliases) ) {
         this._meta.aliases = this._meta.aliases.concat(aliases);
@@ -54,6 +56,11 @@ export class Entity<T extends AcceptibleEntities> {
   outpath(): string | undefined {
     return this._meta.outpath;
   }
+
+  meta(): EntityMeta {
+    return this._meta;
+  }
+  
 }
 
 function replaceSelf<T>(self: string, object: T): T {

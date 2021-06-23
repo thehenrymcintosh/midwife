@@ -1,5 +1,4 @@
 import { LoaderPlugin } from "../entities/Plugin";
-import { RawLoadable } from "../entities/Loadable";
 import fs from "fs";
 import marked from "marked";
 
@@ -7,19 +6,10 @@ export default class MarkdownPlugin implements LoaderPlugin {
   accepts(filename: string): boolean {
     return filename.endsWith(".md");
   }
-  load(filename: string): Promise<RawLoadable> {
+  load(filename: string): Promise<string> {
     return open(filename)
       .then((text) => {
-        return {
-          meta: {
-            type: "record",
-            alias: filename.replace(".md", ""),
-          },
-          data: {
-            markdown: text,
-            html: marked(text)
-          }
-        };
+        return marked(text);
       })
   }
 }

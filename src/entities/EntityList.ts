@@ -1,7 +1,14 @@
-import { Entities } from "./Entity";
+import { EntityMeta, Entities, Entity } from "./Entity";
 
-type Callback = (entity: any ) => void;
 
+type ProxiedEntity = {
+  meta: EntityMeta, 
+  data: any, 
+}
+
+type ForEachCallback = (proxiedEntity: ProxiedEntity) => void;
+type MapCallback<T> = (proxiedEntity: ProxiedEntity) => T;
+type FilterCallback = (proxiedEntity: ProxiedEntity) => boolean;
 export class EntityList {
   private readonly entities: Entities;
   private readonly entityMap: Record<string, any>;
@@ -9,7 +16,10 @@ export class EntityList {
   constructor(entities: Entities) {
     this.entities = entities;
     this.proxy = this.proxy.bind(this);
+    this.toProxiedEntity = this.toProxiedEntity.bind(this);
     this.forEach = this.forEach.bind(this);
+    this.map = this.map.bind(this);
+    this.filter = this.filter.bind(this);
     const entityMap: Record<string, any> = {};
     this.entities.forEach(e => {
       e.aliases().forEach(alias => {
@@ -23,30 +33,56 @@ export class EntityList {
   private proxy<T>(data: T): T {
     const { entityMap, proxy } = this;
     if (typeof data !== "object") return data;
+
+    function getValue(val: any) {
+      if (typeof val === "string" && entityMap[val]) {
+        if (typeof entityMap[val] === "object" && entityMap[val] !== null) {
+          return proxy(entityMap[val]);
+        } else {
+          return entityMap[val];
+        }
+      } else if ( typeof val === "object" && val !== null) {
+        return proxy(val);
+      } else {
+        return val;
+      }
+    }
+
     const handler: ProxyHandler<any> = {
       get: (target, prop) => {
-        const val = target[prop];
-        if (typeof val === "string" && entityMap[val]) {
-          if (typeof entityMap[val] === "object" && entityMap[val] !== null) {
-            return proxy(entityMap[val]);
-          } else {
-            return entityMap[val];
+        if (prop === Symbol.iterator) {
+          return function*() {
+            for (const e of Object.entries(target)) { 
+              yield getValue(e[1]); 
+            }
           }
-        } else if ( typeof val === "object" && val !== null) {
-          return proxy(val);
-        } else {
-          return val;
-        }
+        } 
+        return getValue(target[prop]);
       }, 
     }
     return new Proxy(data, handler);
   }
 
-  forEach(cb: Callback): void {
-    const { proxy, entities } = this;
+  private toProxiedEntity(entity: Entity<any> ):ProxiedEntity {
+    return {meta: entity.meta(), data: this.proxy(entity.unwrap()) };
+  } 
+
+  forEach(cb: ForEachCallback): void {
+    const { toProxiedEntity, entities } = this;
     entities.forEach(entity => {
-      cb( proxy(entity.unwrap()) );
+      cb( toProxiedEntity(entity) );
     });
   }
 
+  map<T>(cb: MapCallback<T>): T[] {
+    const { toProxiedEntity, entities } = this;
+    return entities.map(entity => cb( toProxiedEntity(entity) ));
+  }
+
+  filter(cb: FilterCallback): ProxiedEntity[] {
+    const { toProxiedEntity, entities } = this;
+    return entities
+      .map(e => toProxiedEntity(e))
+      .filter(cb);
+  }
 }

@@ -3,6 +3,7 @@ import { PluginGuards, LoaderPlugin } from "./entities/Plugin";
 import glob from "glob";
 import path from "path";
 import { Entity, Entities } from "./entities/Entity";
+import { EntityList } from "./entities/EntityList";
 
 export class Builder {
   private readonly config : Config;
@@ -18,7 +19,8 @@ export class Builder {
   async build(): Promise<null> {
     const initialEntities = await this.runLoadPlugins();
     const entities = await this.runModifyPlugins( initialEntities );
-    return this.runExportPlugins(entities);
+    
+    return this.runExportPlugins(new EntityList(entities));
   }
 
   private async runLoadPlugins() : Promise<Entities> {
@@ -40,7 +42,7 @@ export class Builder {
     return entities;
   }
 
-  private async runExportPlugins(entities: Entities) : Promise<null> {
+  private async runExportPlugins(entities: EntityList) : Promise<null> {
     const { plugins, viewsDir, outDir } = this.config;
     return Promise.all( 
       plugins

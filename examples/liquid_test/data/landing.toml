@@ -1,9 +1,0 @@
-[meta]
-title="Landing"
-description="My landing page!"
-
-[body]
-h1="Landing [AGENCY_NAME]"
-
-test="rhinocerous"
-post="blog-post-1.md"

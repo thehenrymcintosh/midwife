@@ -8,6 +8,7 @@
   <meta name="description" content="{{ description }}">
 </head>
 <body>
+  <!-- ARTICLE -->
   {% for item in globals.nav %}
     <a href="{{ item.href }}">{{ item.label }}</a>
   {% endfor %}
@@ -15,17 +16,6 @@
   <h1>{{ title }}</h1>
   <p>{{ description }}</p>
 
-  {% for branch in branches %}
-    {{branch}}
-    {{ branch.name }}
-    {% for person in branch.staff %}
-      - {{ person.name }}
-      {% for article in branch.articles %}
-        -- {{ article.title }}
-      {% endfor %}
-    {% endfor %}
-  {% endfor %}
-
-  {{content }}
+  {{ content }}
 </body>
 </html>

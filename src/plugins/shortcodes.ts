@@ -1,6 +1,4 @@
 import { ModifierPlugin } from "../entities/Plugin";
-import { Tree } from "../entities/Tree";
-
 
 type shortcode = {
   text: string,

@@ -1,21 +1,15 @@
 import toml from "toml";
 import { LoaderPlugin } from "../entities/Plugin";
-import { RawLoadable } from "../entities/Loadable";
 import fs from "fs";
 
 export default class TomlPlugin implements LoaderPlugin {
   accepts(filename: string): boolean {
     return filename.endsWith(".toml");
   }
-  load(filename: string): Promise<RawLoadable> {
+  load(filename: string): Promise<Record<any, any>> {
     return open(filename)
       .then((text) => {
-        if (filename.endsWith(".record.toml")) {
-          return toml.parse(text) as RawLoadable
-        }
-        return {
-          data: toml.parse(text),
-        }
+        return toml.parse(text);
       })
   }
 }

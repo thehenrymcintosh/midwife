@@ -1,18 +1,20 @@
 import { RenderPlugin } from "../entities/Plugin";
-import { Tree } from "../entities/Tree";
 import { Liquid } from "liquidjs";
 import fs from "fs";
 import path from "path";
+import { EntityList } from "src/entities/EntityList";
 
 export default class LiquidPlugin implements RenderPlugin {
-  render(tree: Tree, viewsDir: string, outDir: string): Promise<null> {
+  render(entities: EntityList, viewsDir: string, outDir: string): Promise<null> {
     const engine = new Liquid({ root: viewsDir, extname: ".liquid" });
-    const { pages, globals } = tree;
 
     return Promise.all(
-      pages.map(page => {
-        const outPath = changeExtension(path.join(outDir, page.path()), ".html");
-        engine.renderFile("app", {globals, page: page.unwrap() })
+      entities
+      .map(({meta, data}) => {
+        if (!meta.outpath) return Promise.resolve();
+        const outPath = changeExtension(path.join(outDir, meta.outpath), ".html");
+        const template = meta['template'] || "app";
+        return engine.renderFile(template, data)
           .then(output => write(outPath, output) )
       })
     )

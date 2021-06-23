@@ -1,0 +1,6 @@
+_meta = { outpath="__SELF", template="article" }
+
+
+title="TEST RECORD"
+description="This is an example page"
+content="__SELF.md"
