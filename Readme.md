@@ -13,7 +13,7 @@ Upon accessing the property in your view logic, the referenced value will be ret
 Creating entities is easy! All is takes is an id (usually the original file path) and the data you want the entitity to contain. Metadata is automatically extracted from the `_meta` attribute if available on the data. The data cannot be null / undefined / a function. It may behave unexpectedly if you pass in a class like a Date object, due to the internal workings of the proxy. 
 More docs will come later regarding the `_meta` attribute. 
 
-Alises must be unique! The builder will throw an error in the event of an alias clash. 
+Aliases must be unique! The builder will throw an error in the event of an alias clash. 
 ## Notes
 This is a very basic initial Readme after completing the proof-of-concept with some example plugins. It will be made better. 
 
