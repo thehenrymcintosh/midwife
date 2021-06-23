@@ -29,12 +29,13 @@ describe("Entity", () => {
     const input = {
       _meta: {
         aliases: ["example", "__SELF"],
+        alias: "another",
         outpath: "__SELF",
       },
       example: "__SELF.md",
     }
     const r = new Entity("test.liquid", input);
-    expect(r.aliases()).toEqual(["test.liquid", "example", "test"]);
+    expect(r.aliases().sort()).toEqual(["test.liquid", "example", "test", "another"].sort());
     expect(r.outpath()).toEqual("test");
     expect(r.unwrap().example).toEqual("test.md");
   })

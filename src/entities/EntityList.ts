@@ -34,17 +34,19 @@ export class EntityList {
     const { entityMap, proxy } = this;
     if (typeof data !== "object") return data;
 
-    function getValue(val: any) {
-      if (typeof val === "string" && entityMap[val]) {
-        if (typeof entityMap[val] === "object" && entityMap[val] !== null) {
-          return proxy(entityMap[val]);
-        } else {
-          return entityMap[val];
-        }
-      } else if ( typeof val === "object" && val !== null) {
+    function proxyArraysAndObjects(val: any) {
+      if (typeof val === "object" && val !== null) {
         return proxy(val);
       } else {
         return val;
+      }
+    }
+
+    function getValue(val: any) {
+      if (typeof val === "string" && entityMap[val]) {
+        return proxyArraysAndObjects(entityMap[val]);
+      }  else {
+        return proxyArraysAndObjects(val);
       }
     }
 

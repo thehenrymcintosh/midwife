@@ -9,6 +9,7 @@ interface ObjectWithMeta {
   _meta?: {
     outpath?: string,
     aliases?: string | string[],
+    alias?: string | string[],
   }
   [k:string]: any 
 }
@@ -31,18 +32,23 @@ export class Entity<T extends AcceptibleEntities> {
 
     const _meta = (rawloaded as ObjectWithMeta)._meta;
     if ( typeof _meta !== "undefined" ) {
-      const { aliases, outpath, ...rest } = _meta;
+      const { aliases, alias, outpath, ...rest } = _meta;
       Object.assign(this._meta, rest);
       if ( typeof outpath === "string" ) this._meta.outpath = outpath;
-      if ( Array.isArray(aliases) ) {
-        this._meta.aliases = this._meta.aliases.concat(aliases);
-      } else if (typeof aliases === "string") {
-        this._meta.aliases.push(aliases);
-      }
+      this.addAlias(aliases);
+      this.addAlias(alias);
     }
 
     this._meta = replaceSelf(this._meta._self, this._meta);
     this._data = replaceSelf(this._meta._self, this._data);
+  }
+
+  addAlias(aliases?: string | string[]): void {
+    if ( Array.isArray(aliases) ) {
+      this._meta.aliases = this._meta.aliases.concat(aliases);
+    } else if (typeof aliases === "string") {
+      this._meta.aliases.push(aliases);
+    }
   }
 
   unwrap(): T {

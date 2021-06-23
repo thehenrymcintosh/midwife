@@ -1,6 +1,6 @@
-_meta = { alias="westminster" }
+_meta = { aliases="westminster" }
 
 name="Westminster"
 staff=[
-  "staff/henry-mcintosh"
+  "staff/henry-mcintosh.toml"
 ]
