@@ -9,6 +9,7 @@ export default {
   dataDir: "./examples/liquid_test/data",
   viewsDir: "./examples/liquid_test/views",
   outDir: "./examples/liquid_test/dist",
+  refPrefix: "#",
   plugins: [
     new TomlLoader(),
     new MarkdownPlugin(),

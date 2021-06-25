@@ -3,4 +3,4 @@ _meta = { outpath="__SELF", template="article", category="all-articles" }
 
 title="TEST RECORD"
 description="This is an example page"
-content="__SELF.md"
+content="#__SELF.md"

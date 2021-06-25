@@ -8,18 +8,17 @@ export interface InputConfig {
   dataDir?: string,
   viewsDir?: string,
   outDir?: string,
+  refPrefix?: string,
   plugins?: AllPluginTypes[],
 }
-
-export interface Config {
-  mode: "development" | "test" | "production",
-  dataDir: string,
-  viewsDir: string,
-  outDir: string,
-  plugins: AllPluginTypes[],
-}
-
 export class Config {
+  readonly mode: "development" | "test" | "production";
+  readonly dataDir: string;
+  readonly viewsDir: string;
+  readonly outDir: string;
+  readonly refPrefix: string;
+  readonly plugins: AllPluginTypes[];
+
   constructor(config: InputConfig) {
     const cwd = process.cwd();
     this.mode = toEnv(config.mode) || toEnv(NODE_ENV) || "development";
@@ -27,6 +26,7 @@ export class Config {
     this.viewsDir = path.resolve(cwd, config.viewsDir || "./views");
     this.outDir = path.resolve(cwd, config.outDir || "./dist");
     this.plugins = config.plugins || [];
+    this.refPrefix = typeof config.refPrefix !== "undefined" ? config.refPrefix : "#";
   }
 }
 

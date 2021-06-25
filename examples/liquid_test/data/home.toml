@@ -1,8 +1,10 @@
-_meta = { outpath="__SELF" }
+_meta = { outpath="__SELF", globals=true }
 
 title="Home"
 description="My home page!"
+nav="#globals/navigation.toml"
+
 
 branches=[
-  "westminster"
+  "#westminster"
 ]

@@ -72,7 +72,6 @@ export class Entity<T extends AcceptibleEntities> {
   meta(): EntityMeta {
     return this._meta;
   }
-  
 }
 
 function replaceSelf<T>(self: string, object: T): T {

@@ -20,7 +20,7 @@ export class Builder {
     const initialEntities = await this.runLoadPlugins();
     const entities = await this.runModifyPlugins( initialEntities );
     
-    return this.runExportPlugins(new EntityList(entities));
+    return this.runExportPlugins(new EntityList(entities, this.config.refPrefix));
   }
 
   private async runLoadPlugins() : Promise<Entities> {

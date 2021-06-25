@@ -2,5 +2,5 @@ _meta = { aliases="westminster" }
 
 name="Westminster"
 staff=[
-  "staff/henry-mcintosh.toml"
+  "#staff/henry-mcintosh.toml"
 ]

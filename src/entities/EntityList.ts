@@ -12,17 +12,21 @@ type FilterCallback = (proxiedEntity: ProxiedEntity) => boolean;
 export class EntityList {
   private readonly entities: Entities;
   private readonly entityMap: Record<string, any>;
+  private readonly prefix: string;
 
-  constructor(entities: Entities) {
+  constructor(entities: Entities, prefix: string) {
     this.entities = entities;
+    this.prefix = prefix;
     this.proxy = this.proxy.bind(this);
     this.toProxiedEntity = this.toProxiedEntity.bind(this);
+    this.getEntityByRef = this.getEntityByRef.bind(this);
     this.forEach = this.forEach.bind(this);
     this.map = this.map.bind(this);
     this.filter = this.filter.bind(this);
     const entityMap: Record<string, any> = {};
     this.entities.forEach(e => {
-      e.aliases().forEach(alias => {
+      e.aliases()
+      .forEach(alias => {
         if ( entityMap[alias] ) throw new Error(`Duplicate entity alias: "${alias}". Aliases must be unique!`);
         entityMap[alias] = e.unwrap();
       })
@@ -30,23 +34,25 @@ export class EntityList {
     this.entityMap = entityMap;
   }
 
+  private getEntityByRef(val: any): any {
+    const { prefix, entityMap } = this;
+    if (typeof val !== "string") return val;
+    if (!val.startsWith(prefix)) return val;
+    const key = val.slice(prefix.length);
+    if (entityMap[key]) return entityMap[key];
+    return val;
+  }
+
   private proxy<T>(data: T): T {
-    const { entityMap, proxy } = this;
+    const { proxy,  getEntityByRef } = this;
     if (typeof data !== "object") return data;
 
-    function proxyArraysAndObjects(val: any) {
-      if (typeof val === "object" && val !== null) {
-        return proxy(val);
-      } else {
-        return val;
-      }
-    }
-
     function getValue(val: any) {
-      if (typeof val === "string" && entityMap[val]) {
-        return proxyArraysAndObjects(entityMap[val]);
-      }  else {
-        return proxyArraysAndObjects(val);
+      const returnValue = getEntityByRef(val);
+      if (typeof returnValue === "object" && returnValue !== null) {
+        return proxy(returnValue);
+      } else {
+        return returnValue;
       }
     }
 
