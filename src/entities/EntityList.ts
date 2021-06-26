@@ -14,9 +14,9 @@ export class EntityList {
   private readonly entityMap: Record<string, any>;
   private readonly prefix: string;
 
-  constructor(entities: Entities, prefix: string) {
+  constructor(entities: Entities, prefix?: string) {
     this.entities = entities;
-    this.prefix = prefix;
+    this.prefix = typeof prefix === "string" ? prefix : "";
     this.proxy = this.proxy.bind(this);
     this.toProxiedEntity = this.toProxiedEntity.bind(this);
     this.getEntityByRef = this.getEntityByRef.bind(this);
