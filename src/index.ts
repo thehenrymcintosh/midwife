@@ -1,11 +1,20 @@
 import { Builder } from "./Builder";
-import denimConfig from "denim.config.js";
+import { InputConfig } from "./entities/Config";
+import { LoaderPlugin, ModifierPlugin, RenderPlugin, Plugin, AllPluginTypes } from "./entities/Plugin";
+import { EntityList } from "./entities/EntityList";
 
-export async function build( ) {
-  const config = denimConfig;
+export async function build( config: InputConfig ) {
+  console.log(config);
   const builder = new Builder(config);
   await builder.build();
-  console.log("Done");
+  console.log("Build Complete.");
 }
 
-build();
+export {
+  LoaderPlugin, 
+  ModifierPlugin, 
+  RenderPlugin, 
+  Plugin, 
+  AllPluginTypes,
+  EntityList,
+}

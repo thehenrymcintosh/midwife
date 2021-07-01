@@ -1,7 +1,9 @@
 {
-  "name": "denim",
-  "version": "0.0.0",
+  "name": "midwife",
+  "version": "0.0.1",
   "description": "Static site generator ",
+  "main": "./bin/index.js",
+  "types": "./bin/index.d.ts",
   "scripts": {
     "build": "./node_modules/.bin/ts-node build.ts",
     "lint": "eslint . --ext .ts",
@@ -59,10 +61,7 @@
     "build.ts"
   ],
   "dependencies": {
-    "glob": "^7.1.7",
-    "liquidjs": "^9.25.0",
-    "marked": "^2.1.1",
-    "toml": "^3.0.0"
+    "glob": "^7.1.7"
   },
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",

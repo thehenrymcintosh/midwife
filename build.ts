@@ -16,14 +16,14 @@
  (async () => {
      try {
          // Remove current build
-         await remove('./dist/');
-         // Copy front-end files
-         await copy('./src/public', './dist/public');
-         await copy('./src/views', './dist/views');
-         // Copy production env file
-         await copy('./src/.env', './dist/.env');
+         await remove('./bin/');
+        //  // Copy front-end files
+        //  await copy('./src/public', './dist/public');
+        //  await copy('./src/views', './dist/views');
+        //  // Copy production env file
+        //  await copy('./src/.env', './dist/.env');
          // Copy back-end files
-         await exec('tsc --build tsconfig.prod.json', './')
+         await exec('tsc --build tsconfig.json', './')
      } catch (err) {
          logger.err(err);
      }
@@ -39,13 +39,13 @@
  }
  
  
- function copy(src: string, dest: string): Promise<void> {
-     return new Promise((res, rej) => {
-         return fs.copy(src, dest, (err) => {
-             return (!!err ? rej(err) : res());
-         });
-     });
- }
+//  function copy(src: string, dest: string): Promise<void> {
+//      return new Promise((res, rej) => {
+//          return fs.copy(src, dest, (err) => {
+//              return (!!err ? rej(err) : res());
+//          });
+//      });
+//  }
  
  
  function exec(cmd: string, loc: string): Promise<void> {
