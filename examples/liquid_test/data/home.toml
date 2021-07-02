@@ -1,0 +1,10 @@
+_meta = { outpath="index.html", globals=true }
+
+title="Home"
+description="My home page!"
+nav="#globals/navigation.toml"
+
+
+branches=[
+  "#westminster"
+]

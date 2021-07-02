@@ -1,0 +1,7 @@
+_meta = { outpath="__SELF", template="article", category="all-articles"  }
+
+similar_articles="#all-articles"
+
+title="TEST RECORD"
+description="This is an example page"
+content="This is just content!"
