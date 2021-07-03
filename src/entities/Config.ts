@@ -1,5 +1,6 @@
 import { AllPluginTypes }from "./Plugin";
 import path from "path";
+import fs from "fs";
 
 const NODE_ENV = process.env['NODE_ENV'];
 
@@ -25,6 +26,9 @@ export class Config {
     this.dataDir = path.resolve(cwd, config.dataDir || "./data");
     this.viewsDir = path.resolve(cwd, config.viewsDir || "./views");
     this.outDir = path.resolve(cwd, config.outDir || "./dist");
+    if ( !fs.existsSync(this.dataDir) ) throw new Error(`Data directory does not exist at ${this.dataDir}`);
+    if ( !fs.existsSync(this.viewsDir) ) throw new Error(`View directory does not exist at ${this.viewsDir}`);
+    if ( !fs.existsSync(this.outDir) ) throw new Error(`Output directory does not exist at ${this.outDir}`);
     this.plugins = config.plugins || [];
     this.refPrefix = typeof config.refPrefix !== "undefined" ? config.refPrefix : "#";
   }

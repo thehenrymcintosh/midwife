@@ -4,7 +4,6 @@ import { LoaderPlugin, ModifierPlugin, RenderPlugin, Plugin, AllPluginTypes } fr
 import { EntityList } from "./entities/EntityList";
 
 export async function build( config: InputConfig ) {
-  console.log(config);
   const builder = new Builder(config);
   await builder.build();
   console.log("Build Complete.");
